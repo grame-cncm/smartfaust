@@ -15,7 +15,6 @@ readSoundFileF = ffunction(float readSoundFile_sampleF (int), <sampleF.h>,"");
 readSoundFileG = ffunction(float readSoundFile_sampleG (int), <sampleG.h>,"");
 readSoundFileH = ffunction(float readSoundFile_sampleH (int), <sampleH.h>,"");
 
-
 soundFileSize_sampleA = ffunction(int soundFileSize_sampleA(), <sampleA.h>,"");
 soundFileSize_sampleB = ffunction(int soundFileSize_sampleB(), <sampleB.h>,"");
 soundFileSize_sampleC = ffunction(int soundFileSize_sampleC(), <sampleC.h>,"");

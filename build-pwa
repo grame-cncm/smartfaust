@@ -1,0 +1,69 @@
+// sfGrain sfMoulin sfPlayer : excluded for now
+
+# List of directories to process
+directories=("sfCapture" "sfGretchensCat" "sfHell" "sfIter" "sfSiren" "sfTrashComb" "sfTrashRing" "sfTrashShift" "sfTrumpet" "sfWindy")
+
+# Target directory where the processed folders will be copied
+target="/Users/letz/Developpements/sletz.github.io/smartfaust"
+
+# Target directory where the PWA will be deployed
+deploy="https://sletz.github.io/smartfaust"
+
+# Function to generate QR code
+generate_qr_code() {
+    local url="$1"
+    local output="$2"
+    local encoded_url
+    encoded_url=$(echo "$url" | jq -sRr @uri)
+    local generator_url="https://api.qrserver.com/v1/create-qr-code/?data=${encoded_url}"
+    curl -o "$output" "$generator_url"
+}
+
+# Change into the src directory
+cd src
+
+# Loop over each directory in the list
+for dir in "${directories[@]}"; do
+    echo "Processing directory: $dir"
+    
+    # Change into the current directory
+    cd "$dir"
+    
+    # Create a temporary directory for intermediate files
+    mkdir tmp
+    cd tmp
+    
+    echo "Create expanded version"
+    # Run the faust command to create an expanded version of the DSP file
+    faust -e "../$dir.dsp" -o "$dir.dsp"
+    
+    echo "Compile to WebAudio"
+    # Compile the DSP file to WebAudio using faustremote
+    faustremote web webaudiowasm-ts "$dir.dsp"
+    
+    # Go back to the parent directory
+    cd ..
+    
+    # Unzip the generated binary.zip file
+    unzip tmp/binary.zip
+    
+    # Copy the directory to the target location
+    cp -r "$dir" "$target"
+    
+    # Convert the directory name to lowercase
+    lowercase_dir=$(echo "$dir" | tr '[:upper:]' '[:lower:]')
+    
+    # Rename the copied directory to its lowercase version
+    mv "$target/$dir" "$target/$lowercase_dir"
+
+    # Generate QR code for the URL and save it in the target directory
+    url="$deploy/$lowercase_dir"
+    qr_code_file="$target/$lowercase_dir.png"
+    generate_qr_code "$url" "$qr_code_file"
+    
+    # Clean up the temporary directory and the WebAudio directory
+    rm -r tmp "$dir"
+    
+    # Go back to the parent directory to process the next one
+    cd ..
+done

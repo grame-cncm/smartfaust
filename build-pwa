@@ -1,4 +1,4 @@
-// sfGrain sfMoulin sfPlayer : excluded for now
+# sfGrain sfMoulin sfPlayer : excluded for now
 
 # List of directories to process
 directories=("sfCapture" "sfGretchensCat" "sfHell" "sfIter" "sfSiren" "sfTrashComb" "sfTrashRing" "sfTrashShift" "sfTrumpet" "sfWindy")

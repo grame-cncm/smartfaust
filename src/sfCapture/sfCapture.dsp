@@ -1,13 +1,13 @@
 declare name        "Capture";
 declare version     "1.4";
-declare author      "Christophe Lebreton";
+declare author      "Christophe Lebreton, Stéphane Letz";
 declare license     "BSD";
-declare copyright   "SmartFaust - GRAME(c)2013-2018";
+declare copyright   "SmartFaust - GRAME(c)2013-2024";
 
 import("stdfaust.lib");
 
 //-------------------- MAIN -------------------------------
-process =_,(fade_lin) : * : wr_index:idelay_drywet : *(volume)
+process =_,(fade_lin) : * : wr_index : idelay_drywet : *(volume)
 with {
     volume = hslider("v:sfCapture parameter(s)/volume [acc:2 1 -10 -0.8 10][color:0 255 0][hidden:1]",1,-0.1,1,0.001) : max(0) : min(1) : fi.lowpass(1,1);
 };
@@ -28,11 +28,14 @@ speed = hslider("v:sfCapture parameter(s)/speed [acc:0 0 -10 0 10][color: 0 255 
 
 id_count_rec = (0):+~(+(1): * ((fade_lin)>0)) : min(size+1); // recording if fade > O
 // this code acuumulates a large number which makes you lose precision, it is a musical choice ;)
-id_count_play = (0):+~(+(speed): * (play)) : fmod(_,fin_rec:int);
+id_count_play = (0):+~(+(speed): * (play)) : (safe_fmod(_,fin_rec) : int)
+with {
+    safe_fmod(x,y) = fmod(max(ma.EPSILON,x),max(ma.EPSILON,y));
+};
 // this code is the correct version to solve the accumulation problem in the loop
 //id_count_play = fmod(_,max(1,int(fin_rec)))~(+(speed): *(play));
 
-fin_rec = sah(id_count_rec:mem,fade_lin==0);// end of record if fade == O
+fin_rec = sah(id_count_rec : mem, fade_lin==0);    // end of record if fade == O
 
 // START STOP RECORD /////////////////////////////////////////////
 init_rec = select2(record,size+1,_);

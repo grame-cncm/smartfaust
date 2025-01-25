@@ -1,7 +1,7 @@
 # sfGrain sfMoulin sfPlayer : excluded for now
 
 # List of directories to process
-directories=("sfCapture" "sfGretchensCat" "sfHell" "sfIter" "sfSiren" "sfTrashComb" "sfTrashRing" "sfTrashShift" "sfTrumpet" "sfWindy")
+directories=("sfCapture" "sfGrain" "sfGretchensCat" "sfHell" "sfIter" "sfMoulin" "sfPlayer" "sfSiren" "sfTrashComb" "sfTrashRing" "sfTrashShift" "sfTrumpet" "sfWindy")
 
 # Target directory where the processed folders will be copied
 target="/Users/letz/Developpements/sletz.github.io/smartfaust"

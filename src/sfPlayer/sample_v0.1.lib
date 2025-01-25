@@ -1,5 +1,8 @@
-
-import("stdfaust.lib");
+declare name         "sfPlayer";
+declare version      "1.00";
+declare author       "Christophe Lebreton, Stéphane Letz";
+declare license      "BSD";
+declare copyright    "SmartFaust - GRAME(c)2013-2025";
 
 //========================= WAVE TABLES ===============================
 
@@ -7,8 +10,9 @@ import("stdfaust.lib");
 // Stick impact table.
 //
 // USAGE:
-//   index : int : readSoundFile : _
+// index : int : readSoundFile : _
 
+/*
 readSoundFileA = ffunction(float readSoundFile_sampleA (int), <sampleA.h>,"");
 readSoundFileB = ffunction(float readSoundFile_sampleB (int), <sampleB.h>,"");
 readSoundFileC = ffunction(float readSoundFile_sampleC (int), <sampleC.h>,"");
@@ -30,3 +34,34 @@ soundFileSize_sampleG = ffunction(int soundFileSize_sampleG(), <sampleG.h>,"");
 soundFileSize_sampleH = ffunction(int soundFileSize_sampleH(), <sampleH.h>,"");
 soundFileSize_sampleI = ffunction(int soundFileSize_sampleI(), <sampleI.h>,"");
 soundFileSize_sampleJ = ffunction(int soundFileSize_sampleJ(), <sampleJ.h>,"");
+*/
+
+// Rewrite the above code using the soundfile primitive
+
+length(sf, part) = (part,0) : sf : (_,!,!);
+sound(sf, part, rindex) = (part,rindex) : sf : (!,!,_);
+
+samples = soundfile("sounds [url:{'sampleA.flac'; 'sampleB.flac'; 'sampleC.flac'; 'sampleD.flac'; 'sampleE.flac'; 'sampleF.flac'; 'sampleG.flac'; 'sampleH.flac'; 'sampleI.flac'; 'sampleJ.flac'}]", 1);
+
+readSoundFileA = sound(samples, 0);
+readSoundFileB = sound(samples, 1);
+readSoundFileC = sound(samples, 2);
+readSoundFileD = sound(samples, 3);
+readSoundFileE = sound(samples, 4);
+readSoundFileF = sound(samples, 5);
+readSoundFileG = sound(samples, 6);
+readSoundFileH = sound(samples, 7);
+readSoundFileI = sound(samples, 8);
+readSoundFileJ = sound(samples, 9);
+
+soundFileSize_sampleA = length(samples, 0);
+soundFileSize_sampleB = length(samples, 1);
+soundFileSize_sampleC = length(samples, 2);
+soundFileSize_sampleD = length(samples, 3);
+soundFileSize_sampleE = length(samples, 4);
+soundFileSize_sampleF = length(samples, 5);
+soundFileSize_sampleG = length(samples, 6);
+soundFileSize_sampleH = length(samples, 7);
+soundFileSize_sampleI = length(samples, 8);
+soundFileSize_sampleJ = length(samples, 9);
+

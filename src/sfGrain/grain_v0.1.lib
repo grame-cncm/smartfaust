@@ -1,11 +1,16 @@
 
-import("stdfaust.lib");
+declare name         "sfGrain";
+declare version      "1.00";
+declare author       "Christophe Lebreton, Stéphane Letz";
+declare license      "BSD";
+declare copyright    "SmartFaust - GRAME(c)2013-2025";
 
 //========================= SAMPLES TABLES ===============================
 //
 // USAGE:
-//   index : int : readSoundFileA : _
+// index : int : readSoundFileA : _
 
+/*
 readSoundFileA = ffunction(float readSoundFile_sampleA (int), <sampleA.h>,"");
 readSoundFileB = ffunction(float readSoundFile_sampleB (int), <sampleB.h>,"");
 readSoundFileC = ffunction(float readSoundFile_sampleC (int), <sampleC.h>,"");
@@ -23,3 +28,29 @@ soundFileSize_sampleE = ffunction(int soundFileSize_sampleE(), <sampleE.h>,"");
 soundFileSize_sampleF = ffunction(int soundFileSize_sampleF(), <sampleF.h>,"");
 soundFileSize_sampleG = ffunction(int soundFileSize_sampleG(), <sampleG.h>,"");
 soundFileSize_sampleH = ffunction(int soundFileSize_sampleH(), <sampleH.h>,"");
+*/
+
+// Rewrite the above code using the soundfile primitive
+
+length(sf, part) = (part,0) : sf : (_,!,!);
+sound(sf, part, rindex) = (part,rindex) : sf : (!,!,_);
+
+samples = soundfile("sounds [url:{'sampleA.flac'; 'sampleB.flac'; 'sampleC.flac'; 'sampleD.flac'; 'sampleE.flac'; 'sampleF.flac'; 'sampleG.flac'; 'sampleH.flac'}]", 1);
+
+readSoundFileA = sound(samples, 0);
+readSoundFileB = sound(samples, 1);
+readSoundFileC = sound(samples, 2);
+readSoundFileD = sound(samples, 3);
+readSoundFileE = sound(samples, 4);
+readSoundFileF = sound(samples, 5);
+readSoundFileG = sound(samples, 6);
+readSoundFileH = sound(samples, 7);
+
+soundFileSize_sampleA = length(samples, 0);
+soundFileSize_sampleB = length(samples, 1);
+soundFileSize_sampleC = length(samples, 2);
+soundFileSize_sampleD = length(samples, 3);
+soundFileSize_sampleE = length(samples, 4);
+soundFileSize_sampleF = length(samples, 5);
+soundFileSize_sampleG = length(samples, 6);
+soundFileSize_sampleH = length(samples, 7);

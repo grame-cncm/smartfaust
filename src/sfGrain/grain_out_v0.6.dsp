@@ -2,7 +2,7 @@ declare name         "sfGrain_out";
 declare version      "1.02";
 declare author       "Christophe Lebreton";
 declare license      "BSD";
-declare copyright    "SmartFaust - GRAME(c)2013-2018";
+declare copyright    "SmartFaust - GRAME(c)2013-2025";
 
 import("stdfaust.lib");
 import("grain_v0.1.lib");
@@ -15,25 +15,25 @@ process = vgroup("select your sample 1 to 7",(player_A, player_B, player_C, play
 // Accelerometer Part ///////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Usage: _:*(Maccel):_ // this function is useful for smooth control from accelerometers
-accel_x = hslider("v:sfGrain parameter(s)/acc_x [acc:0 0 -10 0 10][color: 0 255 0 ][hidden:1]",0,-100,100,1);
-accel_y = hslider("v:sfGrain parameter(s)/acc_y [acc:1 0 -10 0 10][color: 0 255 0 ][hidden:1]",0,-100,100,1);
-accel_z = hslider("v:sfGrain parameter(s)/acc_z [acc:2 0 -10 0 10][color: 0 255 0 ][hidden:1]",0,-100,100,1);
+accel_x = hslider("v:sfGrain parameter(s)/acc_x [acc:0 0 -10 0 10][color: 0 255 0 ][hidden:1]", 0, -100, 100, 1);
+accel_y = hslider("v:sfGrain parameter(s)/acc_y [acc:1 0 -10 0 10][color: 0 255 0 ][hidden:1]", 0, -100, 100, 1);
+accel_z = hslider("v:sfGrain parameter(s)/acc_z [acc:2 0 -10 0 10][color: 0 255 0 ][hidden:1]", 0, -100, 100, 1);
 
 lowpassfilter = fi.lowpass(N,fc)
 with {
-    //fc=hslider("high_cut [hidden:0]",0.5,0.001,10,0.1);
+    //fc = hslider("high_cut [hidden:0]",0.5,0.001,10,0.1);
     fc = 0.5;
-    N = 1;    // order of filter
+    N = 1; // order of filter
 };
 
 lowpassmotion = fi.lowpass(N,fc)
 with {
-    //fc= hslider("h:motion filter/high_cut [hidden:1]",10,0.01,10,0.01);
+    //f c= hslider("h:motion filter/high_cut [hidden:1]",10,0.01,10,0.01);
     fc = 10;
     N = 1;    // order of filter
 };
 
-//fb=hslider("low_cut [hidden:1]",15,0.1,15,0.01);
+//fb = hslider("low_cut [hidden:1]",15,0.1,15,0.01);
 fb = 15;
 dc(x) = x:fi.dcblockerat(fb);
 
@@ -52,8 +52,8 @@ with {
 };
 
 //------------------
-// Taccel mean Trigger from accelerometer alike a shock detection to start ( send 1 )and from end of motion from Maccel ( send 0 )
-// it is necessary here to set to 1 when there is a shock via accelero
+// Taccel mean Trigger from accelerometer alike a shock detection to start (send 1) and from end of motion from Maccel (send 0)
+// it is necessary here to set to 1 when there is choc via accelero
 // the sound is playing in loop and stops from a level : Maccel < specific level.
 // the volume associated with the sound via Maccel must also be at 0 from this threshold
 
@@ -72,7 +72,7 @@ with {
     s = ((c'>= threshold_down)&(c < threshold_down));
 };
 
-Taccel = ((Accel:trig_up),(Maccel:trig_down):+):(+:max(0):min(1))~_;
+Taccel = ((Accel:trig_up),(Maccel:trig_down) : +) : ( + : max(0) : min(1))~_;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

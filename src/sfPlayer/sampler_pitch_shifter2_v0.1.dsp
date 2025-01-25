@@ -2,7 +2,7 @@ declare name "sfPitchShifter";
 declare version "1.1";
 declare author "Christophe Lebreton";
 declare license "BSD";
-declare copyright "SmartFaust - GRAME(c)2013-2018";
+declare copyright "SmartFaust - GRAME(c)2013-2025";
 
 import("stdfaust.lib");
 
@@ -43,4 +43,4 @@ with {
     c = hslider("v:sfPlayer parameter(s)/dry_wet  [acc:2 0 -10 0 10][color: 0 255 0 ][hidden:1] ",100,0,100,0.01):*(0.01):fi.lowpass(1,1); //[accz:1 0 100 0]
 };
 
-pitchshifter_drywet = _<: _,pitchshifter: dry_wet;
+pitchshifter_drywet = _ <: _,pitchshifter : dry_wet;

@@ -1,109 +1,323 @@
-declare name        "sfMoulin";
-declare version     "1.02";
-declare author      "Christophe Lebreton";
-declare license     "BSD & STK-4.3";
-declare copyright   "SmartFaust - GRAME(c)2013-2018";
-
-import("stdfaust.lib");
-import("moulin_v0.1.lib");
-
-//-------------------- MAIN -------------------------------
-process = vgroup( "select your sample 1 to 8",(player_A, player_B, player_C, player_D, player_E, player_F, player_G, player_H)
-:multiselect(8, select_sample) : fi.dcblockerat(50) : *(Maccel)) : *(out)
-with {
-    out = checkbox("v:sfMoulin/ON/OFF") : si.smooth(0.998);
-};
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Accelerometer Part ///////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Usage: _:*(Maccel):_ // this function is useful for smooth control from accelerometers
-
-accel_x = hslider("v:sfMoulin parameter(s)/acc_x [acc:0 0 -10 0 10][color: 0 255 0 ][hidden:1]",0,-100,100,1); //[accx:1 0 0 0]
-accel_y = hslider("v:sfMoulin parameter(s)/acc_y [acc:1 0 -10 0 10][color: 0 255 0 ][hidden:1]",0,-100,100,1); //[accy:1 0 0 0]
-accel_z = hslider("v:sfMoulin parameter(s)/acc_z [acc:2 0 -10 0 10][color: 0 255 0 ][hidden:1]",0,-100,100,1); //[accz:1 0 0 0]
-
-lowpassfilter = fi.lowpass(N,fc)
-with {
-    //fc=hslider("high_cut [hidden:1]",0.5,0.001,10,0.1);
-    fc = 0.5;
-    N = 1;// order of filter
-};
-
-lowpassmotion = fi.lowpass(N,fc)
-with {
-    //fc = hslider("high_cut [hidden:1]",10,0.01,10,0.01);
-    fc = 10;
-    N = 1;// order of filter
-};
-
-//fb=hslider("low_cut [hidden:1]",15,0.1,15,0.01);
-fb = 15;
-dc(x) = x : fi.dcblockerat(fb);
-
-//offset = hslider ("thr_accel [hidden:1]",9.99,0,9.99,0.01);
-offset = 9.99;
-
-quad(x) = dc(x)*dc(x);
-Accel = quad(accel_x),quad(accel_y),quad(accel_z):> sqrt:-(offset):/((10)-(offset)):max(0.):min(1.);
-
-// Maccel mean Motion with accelerometer
-//Maccel = Accel:lowpassfilter:min(1.);
-Maccel = Accel:an.amp_follower_ud (env_up,env_down)
-with {
-    env_up = 0;
-    env_down = hslider("v:sfMoulin parameter(s)/fade_out[acc:1 0 -10 0 10][color: 255 255 0 ][hidden:1]", 130,0,1000,1)*0.001 : fi.lowpass(1,1);
-};
-
-// Taccel mean Trigger from accelerometer alike a shock detection to start ( send 1 )and from end of motion from Maccel ( send 0 )
-// it is necessary here to set to 1 when there is a shock via accelero
-// the sound is playing in loop and stops from a level : Maccel < specific level.
-// the volume associated with the sound via Maccel must also be at 0 from this threshold
-
-// Trig_up and trig_donw detect a transition up and down from each thresholds
-trig_up(c) = s
-with {
-    //threshold_up = hslider ("thr_up",0.99,0.5,1,0.001);
-    threshold_up = 0.999;
-    s = ((c'<= threshold_up)&(c > threshold_up));
-};
-
-trig_down(c) = (-1) * s
-with {
-    //threshold_down = hslider ("thr_down",0.1,0.,8,0.01);
-    threshold_down = 0.0001;
-    s = ((c'>= threshold_down)&(c < threshold_down));
-};
-
-Taccel = ((Accel:trig_up),(Maccel:trig_down):+) : (+ : max(0) : min(1)) ~ _;
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-////////////////////////////
-// Play buffer ///////
-
-select_sample = int(nentry("v:sfMoulin/Select Sample[style:menu{'1':1;'2':2;'3':3;'4':4;'5':5;'6':6;'7':7;'8':8}]", 1, 1, 8, 1)):-(1);
-
-multiselect(n,s) = par(i,n, *(i==int(s))) :> _;
-
-//speed = hslider("speed playback [accy:1 0 0 0][color: 255 100 255 ]",0,-10,10,0.01): lowpass(1,1);
-//speed = 1;
-// version with gyro
-//speed = vslider ("speed [gyroy:1 0 0 0][color: 0 255 0 ][hidden:1]",1,-3,3,0.001):smooth(0.998):max(-1):min(1);
-// version with accelero
-speed = Maccel:max(-1):min(1);
-
-player(size)= (int)((0):+~(+(speed): * (Taccel): fmod(_,max(1,size)))):abs: int;
-
-player_A = player( soundFileSize_sampleA) : readSoundFileA;
-player_B = player( soundFileSize_sampleB) : readSoundFileB;
-player_C = player( soundFileSize_sampleC) : readSoundFileC;
-player_D = player( soundFileSize_sampleD) : readSoundFileD;
-player_E = player( soundFileSize_sampleE) : readSoundFileE;
-player_F = player( soundFileSize_sampleF) : readSoundFileF;
-player_G = player( soundFileSize_sampleG) : readSoundFileG;
-player_H = player( soundFileSize_sampleH) : readSoundFileH;
-
-////////////////
+declare version "2.78.5";
+declare compile_options "-single -scal -e sfMoulin_old.dsp -o sfMoulin.dsp";
+declare library_path0 "/Users/letz/Developpements/smartfaust/src/sfMoulin/moulin_v0.1.lib";
+declare library_path1 "/usr/local/share/faust/stdfaust.lib";
+declare library_path2 "/usr/local/share/faust/filters.lib";
+declare library_path3 "/usr/local/share/faust/maths.lib";
+declare library_path4 "/usr/local/share/faust/platform.lib";
+declare library_path5 "/usr/local/share/faust/analyzers.lib";
+declare library_path6 "/usr/local/share/faust/signals.lib";
+declare library_path7 "/usr/local/share/faust/basics.lib";
+declare analyzers_lib_name "Faust Analyzer Library";
+declare analyzers_lib_version "1.2.0";
+declare author "Christophe Lebreton, Stéphane Letz";
+declare basics_lib_name "Faust Basic Element Library";
+declare basics_lib_version "1.21.0";
+declare copyright "SmartFaust - GRAME(c)2013-2025";
+declare filename "sfMoulin_old.dsp";
+declare filters_lib_dcblockerat_author "Julius O. Smith III";
+declare filters_lib_dcblockerat_copyright "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>";
+declare filters_lib_dcblockerat_license "MIT-style STK-4.3 license";
+declare filters_lib_lowpass0_highpass1 "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>";
+declare filters_lib_lowpass0_highpass1_author "Julius O. Smith III";
+declare filters_lib_lowpass_author "Julius O. Smith III";
+declare filters_lib_lowpass_copyright "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>";
+declare filters_lib_lowpass_license "MIT-style STK-4.3 license";
+declare filters_lib_name "Faust Filters Library";
+declare filters_lib_pole_author "Julius O. Smith III";
+declare filters_lib_pole_copyright "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>";
+declare filters_lib_pole_license "MIT-style STK-4.3 license";
+declare filters_lib_tf1_author "Julius O. Smith III";
+declare filters_lib_tf1_copyright "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>";
+declare filters_lib_tf1_license "MIT-style STK-4.3 license";
+declare filters_lib_tf1s_author "Julius O. Smith III";
+declare filters_lib_tf1s_copyright "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>";
+declare filters_lib_tf1s_license "MIT-style STK-4.3 license";
+declare filters_lib_version "1.6.0";
+declare filters_lib_zero_author "Julius O. Smith III";
+declare filters_lib_zero_copyright "Copyright (C) 2003-2019 by Julius O. Smith III <jos@ccrma.stanford.edu>";
+declare filters_lib_zero_license "MIT-style STK-4.3 license";
+declare license "BSD & STK-4.3";
+declare maths_lib_author "GRAME";
+declare maths_lib_copyright "GRAME";
+declare maths_lib_license "LGPL with exception";
+declare maths_lib_name "Faust Math Library";
+declare maths_lib_version "2.8.1";
+declare moulin_v0_1_lib_author "Christophe Lebreton, Stéphane Letz";
+declare moulin_v0_1_lib_copyright "SmartFaust - GRAME(c)2013-2025";
+declare moulin_v0_1_lib_license "BSD";
+declare moulin_v0_1_lib_name "sfGrain";
+declare moulin_v0_1_lib_version "1.00";
+declare name "sfMoulin";
+declare platform_lib_name "Generic Platform Library";
+declare platform_lib_version "1.3.0";
+declare signals_lib_name "Faust Signal Routing Library";
+declare signals_lib_version "1.6.0";
+declare version "1.02";
+ID_0 = hslider("v:sfMoulin parameter(s)/acc_x [acc:0 0 -10 0 10][color: 0 255 0 ][hidden:1]", 0.0f, -1e+02f, 1e+02f, 1.0f);
+ID_1 = fconstant(int fSamplingFreq, <math.h>);
+ID_2 = 1.0f, ID_1;
+ID_3 = (ID_2 : max);
+ID_4 = 1.92e+05f, ID_3;
+ID_5 = (ID_4 : min);
+ID_6 = 47.12389f, ID_5;
+ID_7 = (ID_6 : /);
+ID_8 = 1, ID_7;
+ID_9 = (ID_8 : +);
+ID_10 = 1.0f, ID_9;
+ID_11 = (ID_10 : /);
+ID_12 = _, ID_11;
+ID_13 = ID_12 : *;
+ID_14 = _, mem;
+ID_15 = _, 1;
+ID_16 = (ID_15 : *);
+ID_17 = _, ID_16;
+ID_18 = ID_17 : -;
+ID_19 = ID_14 : ID_18;
+ID_20 = _ <: ID_19;
+ID_21 = (ID_8 : -);
+ID_22 = ID_21, ID_11;
+ID_23 = (ID_22 : *);
+ID_24 = _, ID_23;
+ID_25 = (ID_24 : *);
+ID_26 = + ~ ID_25;
+ID_27 = ID_20 : ID_26;
+ID_28 = ID_13 : ID_27;
+ID_29 = (ID_0 : ID_28);
+ID_30 = ID_29, ID_29;
+ID_31 = (ID_30 : *);
+ID_32 = hslider("v:sfMoulin parameter(s)/acc_y [acc:1 0 -10 0 10][color: 0 255 0 ][hidden:1]", 0.0f, -1e+02f, 1e+02f, 1.0f);
+ID_33 = (ID_32 : ID_28);
+ID_34 = ID_33, ID_33;
+ID_35 = (ID_34 : *);
+ID_36 = hslider("v:sfMoulin parameter(s)/acc_z [acc:2 0 -10 0 10][color: 0 255 0 ][hidden:1]", 0.0f, -1e+02f, 1e+02f, 1.0f);
+ID_37 = (ID_36 : ID_28);
+ID_38 = ID_37, ID_37;
+ID_39 = (ID_38 : *);
+ID_40 = ID_35, ID_39;
+ID_41 = ID_31, ID_40;
+ID_42 = _, 9.99f;
+ID_43 = ID_42 : -;
+ID_44 = _, 0.01f;
+ID_45 = ID_44 : /;
+ID_46 = 0.0f, _;
+ID_47 = ID_46 : max;
+ID_48 = 1.0f, _;
+ID_49 = ID_48 : min;
+ID_50 = ID_47 : ID_49;
+ID_51 = ID_45 : ID_50;
+ID_52 = ID_43 : ID_51;
+ID_53 = sqrt : ID_52;
+ID_54 = ID_41 :> ID_53;
+ID_55 = abs : \(x1).(x1,(1.0f,(((hslider("v:sfMoulin parameter(s)/fade_out[acc:1 0 -10 0 10][color: 255 255 0 ][hidden:1]", 1.3e+02f, 0.0f, 1e+03f, 1.0f),0.001f : * : _<:(_,((1,(0,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : *) : +),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : *),(mem : _,((1,(0,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : *) : -),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : *):>+~(_,(0,((1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : -),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : -) : *) : abs),1.1920929e-07f : <),(-1.0f,((((hslider("v:sfMoulin parameter(s)/fade_out[acc:1 0 -10 0 10][color: 255 255 0 ][hidden:1]", 1.3e+02f, 0.0f, 1e+03f, 1.0f),0.001f : * : _<:(_,((1,(0,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : *) : +),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : *),(mem : _,((1,(0,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : *) : -),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : *):>+~(_,(0,((1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : -),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : -) : *) : abs),1.1920929e-07f : <),(hslider("v:sfMoulin parameter(s)/fade_out[acc:1 0 -10 0 10][color: 255 255 0 ][hidden:1]", 1.3e+02f, 0.0f, 1e+03f, 1.0f),0.001f : * : _<:(_,((1,(0,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : *) : +),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : *),(mem : _,((1,(0,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : *) : -),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : *):>+~(_,(0,((1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : -),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : -) : *)),1.0f : select2),(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min : float) : *) : / : exp),0.0f : select2) : -) : * : (+ : x1,_ : max)~(_,(((hslider("v:sfMoulin parameter(s)/fade_out[acc:1 0 -10 0 10][color: 255 255 0 ][hidden:1]", 1.3e+02f, 0.0f, 1e+03f, 1.0f),0.001f : * : _<:(_,((1,(0,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : *) : +),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : *),(mem : _,((1,(0,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : *) : -),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : *):>+~(_,(0,((1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : -),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : -) : *) : abs),1.1920929e-07f : <),(-1.0f,((((hslider("v:sfMoulin parameter(s)/fade_out[acc:1 0 -10 0 10][color: 255 255 0 ][hidden:1]", 1.3e+02f, 0.0f, 1e+03f, 1.0f),0.001f : * : _<:(_,((1,(0,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : *) : +),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : *),(mem : _,((1,(0,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : *) : -),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : *):>+~(_,(0,((1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : -),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : -) : *) : abs),1.1920929e-07f : <),(hslider("v:sfMoulin parameter(s)/fade_out[acc:1 0 -10 0 10][color: 255 255 0 ][hidden:1]", 1.3e+02f, 0.0f, 1e+03f, 1.0f),0.001f : * : _<:(_,((1,(0,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : *) : +),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : *),(mem : _,((1,(0,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : *) : -),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : *):>+~(_,(0,((1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : -),(1,(1,(3.1415927f,(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min) : / : tan) : /) : +) : /) : -) : *)),1.0f : select2),(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min : float) : *) : / : exp),0.0f : select2) : *));
+ID_56 = ID_55 : \(x2).(\(x3).(((1.0f,(1,(-1.0f,((1,0,1.0f : select2),(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min : float) : *) : / : exp),0.0f : select2) : -),x2 : *),((1,(-1.0f,((1,0,1.0f : select2),(1.92e+05f,(1.0f,fconstant(int fSamplingFreq, <math.h>) : max) : min : float) : *) : / : exp),0.0f : select2),x3 : *) : +)~_);
+ID_57 = ID_54 : ID_56;
+ID_58 = -1, _;
+ID_59 = ID_58 : max;
+ID_60 = 1, _;
+ID_61 = ID_60 : min;
+ID_62 = ID_59 : ID_61;
+ID_63 = (ID_57 : ID_62);
+ID_64 = _, ID_63;
+ID_65 = ID_64 : +;
+ID_66 = (ID_54 : \(x4).(((x4 : mem),0.999f : <=),(x4,0.999f : >) : &));
+ID_67 = (ID_57 : \(x5).(-1,(((x5 : mem),0.0001f : >=),(x5,0.0001f : <) : &) : *));
+ID_68 = ID_66, ID_67;
+ID_69 = ID_68 : +;
+ID_70 = 0, _;
+ID_71 = ID_70 : max;
+ID_72 = ID_71 : ID_61;
+ID_73 = (+ : ID_72);
+ID_74 = ID_73 ~ _;
+ID_75 = (ID_69 : ID_74);
+ID_76 = _, ID_75;
+ID_77 = ID_76 : *;
+ID_78 = 0, 0;
+ID_79 = soundfile("sounds [url:{'sampleA.flac'; 'sampleB.flac'; 'sampleC.flac'; 'sampleD.flac'; 'sampleE.flac'; 'sampleF.flac'; 'sampleG.flac'; 'sampleH.flac'}]", 1);
+ID_80 = !, !;
+ID_81 = _, ID_80;
+ID_82 = ID_79 : ID_81;
+ID_83 = (ID_78 : ID_82);
+ID_84 = 1, ID_83;
+ID_85 = (ID_84 : max);
+ID_86 = _, ID_85;
+ID_87 = ID_86 : fmod;
+ID_88 = ID_77 : ID_87;
+ID_89 = (ID_65 : ID_88);
+ID_90 = + ~ ID_89;
+ID_91 = 0 : ID_90;
+ID_92 = ID_91 : int;
+ID_93 = abs : int;
+ID_94 = ID_92 : ID_93;
+ID_95 = (ID_94 : \(x8).(0,x8 : soundfile("sounds [url:{'sampleA.flac'; 'sampleB.flac'; 'sampleC.flac'; 'sampleD.flac'; 'sampleE.flac'; 'sampleF.flac'; 'sampleG.flac'; 'sampleH.flac'}]", 1) : !,!,_));
+ID_96 = 1, 0;
+ID_97 = (ID_96 : ID_82);
+ID_98 = 1, ID_97;
+ID_99 = (ID_98 : max);
+ID_100 = _, ID_99;
+ID_101 = ID_100 : fmod;
+ID_102 = ID_77 : ID_101;
+ID_103 = (ID_65 : ID_102);
+ID_104 = + ~ ID_103;
+ID_105 = 0 : ID_104;
+ID_106 = ID_105 : int;
+ID_107 = ID_106 : ID_93;
+ID_108 = (ID_107 : \(x9).(1,x9 : soundfile("sounds [url:{'sampleA.flac'; 'sampleB.flac'; 'sampleC.flac'; 'sampleD.flac'; 'sampleE.flac'; 'sampleF.flac'; 'sampleG.flac'; 'sampleH.flac'}]", 1) : !,!,_));
+ID_109 = 2, 0;
+ID_110 = (ID_109 : ID_82);
+ID_111 = 1, ID_110;
+ID_112 = (ID_111 : max);
+ID_113 = _, ID_112;
+ID_114 = ID_113 : fmod;
+ID_115 = ID_77 : ID_114;
+ID_116 = (ID_65 : ID_115);
+ID_117 = + ~ ID_116;
+ID_118 = 0 : ID_117;
+ID_119 = ID_118 : int;
+ID_120 = ID_119 : ID_93;
+ID_121 = (ID_120 : \(x10).(2,x10 : soundfile("sounds [url:{'sampleA.flac'; 'sampleB.flac'; 'sampleC.flac'; 'sampleD.flac'; 'sampleE.flac'; 'sampleF.flac'; 'sampleG.flac'; 'sampleH.flac'}]", 1) : !,!,_));
+ID_122 = 3, 0;
+ID_123 = (ID_122 : ID_82);
+ID_124 = 1, ID_123;
+ID_125 = (ID_124 : max);
+ID_126 = _, ID_125;
+ID_127 = ID_126 : fmod;
+ID_128 = ID_77 : ID_127;
+ID_129 = (ID_65 : ID_128);
+ID_130 = + ~ ID_129;
+ID_131 = 0 : ID_130;
+ID_132 = ID_131 : int;
+ID_133 = ID_132 : ID_93;
+ID_134 = (ID_133 : \(x11).(3,x11 : soundfile("sounds [url:{'sampleA.flac'; 'sampleB.flac'; 'sampleC.flac'; 'sampleD.flac'; 'sampleE.flac'; 'sampleF.flac'; 'sampleG.flac'; 'sampleH.flac'}]", 1) : !,!,_));
+ID_135 = 4, 0;
+ID_136 = (ID_135 : ID_82);
+ID_137 = 1, ID_136;
+ID_138 = (ID_137 : max);
+ID_139 = _, ID_138;
+ID_140 = ID_139 : fmod;
+ID_141 = ID_77 : ID_140;
+ID_142 = (ID_65 : ID_141);
+ID_143 = + ~ ID_142;
+ID_144 = 0 : ID_143;
+ID_145 = ID_144 : int;
+ID_146 = ID_145 : ID_93;
+ID_147 = (ID_146 : \(x12).(4,x12 : soundfile("sounds [url:{'sampleA.flac'; 'sampleB.flac'; 'sampleC.flac'; 'sampleD.flac'; 'sampleE.flac'; 'sampleF.flac'; 'sampleG.flac'; 'sampleH.flac'}]", 1) : !,!,_));
+ID_148 = 5, 0;
+ID_149 = (ID_148 : ID_82);
+ID_150 = 1, ID_149;
+ID_151 = (ID_150 : max);
+ID_152 = _, ID_151;
+ID_153 = ID_152 : fmod;
+ID_154 = ID_77 : ID_153;
+ID_155 = (ID_65 : ID_154);
+ID_156 = + ~ ID_155;
+ID_157 = 0 : ID_156;
+ID_158 = ID_157 : int;
+ID_159 = ID_158 : ID_93;
+ID_160 = (ID_159 : \(x13).(5,x13 : soundfile("sounds [url:{'sampleA.flac'; 'sampleB.flac'; 'sampleC.flac'; 'sampleD.flac'; 'sampleE.flac'; 'sampleF.flac'; 'sampleG.flac'; 'sampleH.flac'}]", 1) : !,!,_));
+ID_161 = 6, 0;
+ID_162 = (ID_161 : ID_82);
+ID_163 = 1, ID_162;
+ID_164 = (ID_163 : max);
+ID_165 = _, ID_164;
+ID_166 = ID_165 : fmod;
+ID_167 = ID_77 : ID_166;
+ID_168 = (ID_65 : ID_167);
+ID_169 = + ~ ID_168;
+ID_170 = 0 : ID_169;
+ID_171 = ID_170 : int;
+ID_172 = ID_171 : ID_93;
+ID_173 = (ID_172 : \(x14).(6,x14 : soundfile("sounds [url:{'sampleA.flac'; 'sampleB.flac'; 'sampleC.flac'; 'sampleD.flac'; 'sampleE.flac'; 'sampleF.flac'; 'sampleG.flac'; 'sampleH.flac'}]", 1) : !,!,_));
+ID_174 = 7, 0;
+ID_175 = (ID_174 : ID_82);
+ID_176 = 1, ID_175;
+ID_177 = (ID_176 : max);
+ID_178 = _, ID_177;
+ID_179 = ID_178 : fmod;
+ID_180 = ID_77 : ID_179;
+ID_181 = (ID_65 : ID_180);
+ID_182 = + ~ ID_181;
+ID_183 = 0 : ID_182;
+ID_184 = ID_183 : int;
+ID_185 = ID_184 : ID_93;
+ID_186 = (ID_185 : \(x15).(7,x15 : soundfile("sounds [url:{'sampleA.flac'; 'sampleB.flac'; 'sampleC.flac'; 'sampleD.flac'; 'sampleE.flac'; 'sampleF.flac'; 'sampleG.flac'; 'sampleH.flac'}]", 1) : !,!,_));
+ID_187 = ID_173, ID_186;
+ID_188 = ID_160, ID_187;
+ID_189 = ID_147, ID_188;
+ID_190 = ID_134, ID_189;
+ID_191 = ID_121, ID_190;
+ID_192 = ID_108, ID_191;
+ID_193 = ID_95, ID_192;
+ID_194 = nentry("v:sfMoulin/Select Sample[style:menu{'1':1;'2':2;'3':3;'4':4;'5':5;'6':6;'7':7;'8':8}]", 1.0f, 1.0f, 8.0f, 1.0f);
+ID_195 = ID_194 : int;
+ID_196 = ID_15 : -;
+ID_197 = ID_195 : ID_196;
+ID_198 = (ID_197 : int);
+ID_199 = 0, ID_198;
+ID_200 = (ID_199 : ==);
+ID_201 = _, ID_200;
+ID_202 = (ID_201 : *);
+ID_203 = 1, ID_198;
+ID_204 = (ID_203 : ==);
+ID_205 = _, ID_204;
+ID_206 = (ID_205 : *);
+ID_207 = 2, ID_198;
+ID_208 = (ID_207 : ==);
+ID_209 = _, ID_208;
+ID_210 = (ID_209 : *);
+ID_211 = 3, ID_198;
+ID_212 = (ID_211 : ==);
+ID_213 = _, ID_212;
+ID_214 = (ID_213 : *);
+ID_215 = 4, ID_198;
+ID_216 = (ID_215 : ==);
+ID_217 = _, ID_216;
+ID_218 = (ID_217 : *);
+ID_219 = 5, ID_198;
+ID_220 = (ID_219 : ==);
+ID_221 = _, ID_220;
+ID_222 = (ID_221 : *);
+ID_223 = 6, ID_198;
+ID_224 = (ID_223 : ==);
+ID_225 = _, ID_224;
+ID_226 = (ID_225 : *);
+ID_227 = 7, ID_198;
+ID_228 = (ID_227 : ==);
+ID_229 = _, ID_228;
+ID_230 = (ID_229 : *);
+ID_231 = ID_226, ID_230;
+ID_232 = ID_222, ID_231;
+ID_233 = ID_218, ID_232;
+ID_234 = ID_214, ID_233;
+ID_235 = ID_210, ID_234;
+ID_236 = ID_206, ID_235;
+ID_237 = ID_202, ID_236;
+ID_238 = ID_237 :> _;
+ID_239 = 157.07964f, ID_5;
+ID_240 = (ID_239 : /);
+ID_241 = 1, ID_240;
+ID_242 = (ID_241 : +);
+ID_243 = 1.0f, ID_242;
+ID_244 = (ID_243 : /);
+ID_245 = _, ID_244;
+ID_246 = ID_245 : *;
+ID_247 = (ID_241 : -);
+ID_248 = ID_247, ID_244;
+ID_249 = (ID_248 : *);
+ID_250 = _, ID_249;
+ID_251 = (ID_250 : *);
+ID_252 = + ~ ID_251;
+ID_253 = ID_20 : ID_252;
+ID_254 = ID_246 : ID_253;
+ID_255 = _, ID_57;
+ID_256 = ID_255 : *;
+ID_257 = ID_254 : ID_256;
+ID_258 = ID_238 : ID_257;
+ID_259 = ID_193 : ID_258;
+ID_260 = vgroup("select your sample 1 to 8", ID_259);
+ID_261 = checkbox("v:sfMoulin/ON/OFF");
+ID_262 = (ID_261 : \(x6).(\(x7).((0.002f,x6 : *),(0.998f,x7 : *) : +)~_));
+ID_263 = _, ID_262;
+ID_264 = ID_263 : *;
+ID_265 = ID_260 : ID_264;
+process = ID_265;

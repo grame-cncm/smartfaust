@@ -1,8 +1,8 @@
 declare name      "sfZverb";
 declare version   "1.4";
-declare author    "Christophe Lebreton";
+declare author    "Christophe Lebreton, Stéphane Letz";
 declare license   "BSD";
-declare copyright "SmartFaust - GRAME(c)2013-2018";
+declare copyright "SmartFaust - GRAME(c)2013-2015";
 
 import("stdfaust.lib");
 
@@ -12,7 +12,7 @@ process = _ <: zita_rev3 :> _;
 //-------------------- PARAMETERS -------------------------------
 lowpassmotion = fi.lowpass(N,fc)
 with {
-    //fc= hslider("h:motion filter/high_cut [hidden:1]",10,0.01,10,0.01);
+    // fc= hslider("h:motion filter/high_cut [hidden:1]",10,0.01,10,0.01);
     fc = 10;
     N = 1;// order of filter
 };
@@ -70,7 +70,6 @@ with {
         g(j,i) = exp(-3.0*log(10.0)*tdelay(i)/n60(j));
     };
 };
-
 
 zita_rev1_stereo4(rdel,f1,f2,t60dc,t60m,fsmax) =
    re.zita_in_delay(rdel)

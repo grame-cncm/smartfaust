@@ -23,14 +23,14 @@ accel_z = hgroup ("v:sfPlayer parameter(s)/accel [hidden:1]", vslider("acc_z [ac
 
 lowpassfilter = fi.lowpass(N,fc)
 with {
-    //fc=hslider("high_cut [hidden:1]",0.5,0.001,10,0.1);
+    // fc=hslider("high_cut [hidden:1]",0.5,0.001,10,0.1);
     fc = 0.5;
     N = 1;// order of filter
 };
 
 lowpassmotion = fi.lowpass(N,fc)
 with {
-    //fc= hslider("h:motion filter/high_cut [hidden:1]",10,0.01,10,0.01);
+    // fc= hslider("h:motion filter/high_cut [hidden:1]",10,0.01,10,0.01);
     fc = 10;
     N = 1;// order of filter
 };
@@ -53,12 +53,12 @@ with {
     env_down = hslider("v:sfPlayer parameter(s)/fade_out[acc:1 0 -10 0 10][color: 255 255 0 ][hidden:1]", 130,0,1000,1)*0.001:fi.lowpass(1,1); //[accy:1 0 130 0]
 };
 
-// Taccel mean Trigger from accelerometer alike a shock detection to start ( send 1 )and from end of motion from Maccel ( send 0 )
-// it is necessary here to set to 1 when there is a shock via accelero
+// Taccel mean Trigger from accelerometer alike a choc detection to start (send 1) and from end of motion from Maccel (send 0)
+// it is necessary here to set to 1 when there is a choc via accelero
 // the sound is playing in loop and stops from a level : Maccel < specific level.
 // the volume associated with the sound via Maccel must also be at 0 from this threshold
 
-// Trig_up and trig_donw detect a transition up and down from each thresholds
+// Trig_up and trig_donw detect a transition up and down from each threshold
 trig_up(c) = s
 with {
     //threshold_up = hslider ("thr_up",0.99,0.5,1,0.001);

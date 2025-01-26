@@ -9,7 +9,7 @@ import("stdfaust.lib");
 //-------------------- MAIN -------------------------------
 process = Hell_EKS2 : Hell_comb2 : Hell_Verb2 : *(out) : max(-0.99) : min(0.99)
 with {
-    out = checkbox("v:sfHell/ON OFF") : si.smooth(0.998);
+    out = checkbox("v:sfHell/ON/OFF") : si.smooth(0.998);
 };
 
 //-------------------- PARAMETERS -------------------------------
@@ -189,7 +189,6 @@ with {
     outmix(N) = outmix(N/2),par(i,N/2,!);
 };
 
-
 // from effect.lib and adapted by Christophe Lebreton with EQ and some parameters ranges changed .... no level out sliders
 //---------------------------------- zita_rev1 ------------------------------
 // Example GUI for zita_rev1_stereo (mostly following the Linux zita-rev1 GUI).
@@ -264,7 +263,7 @@ with {
         dry = 1.0-wet;
     };
 
-    drywet = (hslider("v:sfHell parameter(s)/[1] DryWetMix  [tooltip: -1 = dry, 1 = wet] [acc:1 1 -10 0 10][color:255 255 0][hidden:1]", 5, 0, 20, 0.1)*0.02)-1 : si.smooth(0.99) : max(-1) : min(1);
+    drywet = (hslider("v:sfHell parameter(s)/[1] DryWetMix [tooltip: -1 = dry, 1 = wet] [acc:1 1 -10 0 10][color:255 255 0][hidden:1]", 5, 0, 20, 0.1)*0.02)-1 : si.smooth(0.99) : max(-1) : min(1);
 
     // out_level = *(gain),*(gain);
     // gain = out_group(vslider("[2] Level [unit:dB] [style:knob] [tooltip: Output scale factor]", -0, -70, 40, 0.1)) : db2linear;

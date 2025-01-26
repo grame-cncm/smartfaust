@@ -1,8 +1,8 @@
-declare name         "sfGrain";
-declare version      "1.04";
-declare author       "Christophe Lebreton, Stéphane Letz";
-declare license      "BSD";
-declare copyright    "SmartFaust - GRAME(c)2013-2025";
+declare name       "sfGrain";
+declare version    "1.04";
+declare author     "Christophe Lebreton, Stéphane Letz";
+declare license    "BSD";
+declare copyright  "SmartFaust - GRAME(c)2013-2025";
 
 declare soundfiles "https://raw.githubusercontent.com/grame-cncm/smartfaust/master/src/sfGrain";
 

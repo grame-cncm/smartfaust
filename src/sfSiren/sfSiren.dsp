@@ -26,5 +26,5 @@ with {
     carrier_freq = hslider("v:sfSiren parameter(s)/freq [acc:0 0 -10 0 10][color:255 0 0][hidden:1]",300,100,2000,1) : lowpassfilter;
     harmonicity_ratio = hslider("v:sfSiren parameter(s)/harmoni [acc:0 1 -10 0 10][color:255 0 0][hidden:1]",0,0,10,0.001) : lowpassfilter;
     modulation_index = hslider("v:sfSiren parameter(s)/freqmod [acc:1 1 -10 0 10][color:255 255 0][hidden:1]", 2.5,0.,10,0.001) : lowpassfilter;
-    vol = hslider("v:sfSiren parameter(s)/vol [acc:0 1 -10 0 10] [color:255 0 0][hidden:1]",0.6,0,1,0.0001) : lowpassfilter;
+    vol = hslider("v:sfSiren parameter(s)/vol [acc:0 1 -10 0 10][color:255 0 0][hidden:1]",0.6,0,1,0.0001) : lowpassfilter;
 };

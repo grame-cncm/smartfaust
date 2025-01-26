@@ -19,8 +19,8 @@ freq = hslider("v:sfTrumpet parameter(s)/freq [1] [acc:0 0 -10 0 10][color:255 0
 //gain = nentry("h:Basic_Parameters/gain [1][hidden:1][tooltip:Gain (value between 0 and 1)]",1,0,1,0.01):smooth(0.998);
 gain = 1;
 gate = checkbox("v:sfTrumpet/ON/OFF");
-pressure = hslider("v:sfTrumpet parameter(s)/Pressure[2][tooltip:A value between 0 and 1][color:255 255 0][acc:1 0 -10 0 10][hidden:1]",0.095,0.001,0.198,0.001) : si.bsmooth;
-lipTension = hslider("v:sfTrumpet parameter(s)/Lip_Tension[2][tooltip:A value between 0 and 1][color:255 0 0][acc:0 0 -10 0 10][hidden:1]",0.688,0.626,0.751,0.001);
+pressure = hslider("v:sfTrumpet parameter(s)/Pressure[2][tooltip:A value between 0 and 1][acc:1 0 -10 0 10][color:255 255 0][hidden:1]",0.095,0.001,0.198,0.001) : si.bsmooth;
+lipTension = hslider("v:sfTrumpet parameter(s)/Lip_Tension[2][tooltip:A value between 0 and 1][acc:0 0 -10 0 10][color:255 0 0][hidden:1]",0.688,0.626,0.751,0.001);
 //slideLength = hslider("h:Physical_and_Nonlinearity/v:Physical_Parameters/Slide_Length[2][tooltip:A value between 0 and 1]",0.326,0.01,1,0.001);
 slideLength = 0.01;
 
@@ -172,7 +172,6 @@ with {
         g(j,i) = exp(-3.0*log(10.0)*tdelay(i)/n60(j));
     };
 };
-
 
 zita_rev1_stereo4(rdel,f1,f2,t60dc,t60m,fsmax) =
    re.zita_in_delay(rdel)

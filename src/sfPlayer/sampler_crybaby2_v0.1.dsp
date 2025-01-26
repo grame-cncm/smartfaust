@@ -20,11 +20,11 @@ with {
 // direct from effect.lib ( "Julius O. Smith ") and adapted by Christophe Lebreton for ios
 crybaby_ios = ve.crybaby(wah)
 with {
-    wah = hslider("v:sfPlayer parameter(s)/[1] Wah parameter[acc:0 0 -10 0 10][color: 255 0 0 ][hidden:1]",0,0,1,0.01) : fi.lowpass(1,1); //[accx:1 0 0. 0]
+    wah = hslider("v:sfPlayer parameter(s)/[1] Wah parameter [acc:0 0 -10 0 10][color: 255 0 0][hidden:1]",0,0,1,0.01) : fi.lowpass(1,1); //[accx:1 0 0. 0]
 };
 
 // Dry Wet avec expression en % ////////////////////////////////////////
-drywet = hslider ("v:sfPlayer parameter(s)/ DryWet [acc:1 0 -10 0 10][color: 255 255 0 ] [hidden:1]", 0, 0, 100, 1) : *(0.02) : -(1) :  fi.lowpass(1,1); //[accy:1 0 0 0]
+drywet = hslider("v:sfPlayer parameter(s)/ DryWet [acc:1 0 -10 0 10][color: 255 255 0][hidden:1]", 0, 0, 100, 1) : *(0.02) : -(1) : fi.lowpass(1,1); //[accy:1 0 0 0]
 
 dry_wet_mono(x) = *(wet) + dry*x
 with {

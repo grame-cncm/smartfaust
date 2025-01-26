@@ -19,9 +19,9 @@ with {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Usage: _:*(Maccel):_ // this function is useful for smooth control from accelerometers
 
-accel_x = hslider("v:sfMoulin parameter(s)/acc_x [acc:0 0 -10 0 10][color: 0 255 0 ][hidden:1]",0,-100,100,1); //[accx:1 0 0 0]
-accel_y = hslider("v:sfMoulin parameter(s)/acc_y [acc:1 0 -10 0 10][color: 0 255 0 ][hidden:1]",0,-100,100,1); //[accy:1 0 0 0]
-accel_z = hslider("v:sfMoulin parameter(s)/acc_z [acc:2 0 -10 0 10][color: 0 255 0 ][hidden:1]",0,-100,100,1); //[accz:1 0 0 0]
+accel_x = hslider("v:sfMoulin parameter(s)/acc_x [acc:0 0 -10 0 10][color: 0 255 0][hidden:1]",0,-100,100,1); //[accx:1 0 0 0]
+accel_y = hslider("v:sfMoulin parameter(s)/acc_y [acc:1 0 -10 0 10][color: 0 255 0][hidden:1]",0,-100,100,1); //[accy:1 0 0 0]
+accel_z = hslider("v:sfMoulin parameter(s)/acc_z [acc:2 0 -10 0 10][color: 0 255 0][hidden:1]",0,-100,100,1); //[accz:1 0 0 0]
 
 lowpassfilter = fi.lowpass(N,fc)
 with {
@@ -45,14 +45,14 @@ dc(x) = x : fi.dcblockerat(fb);
 offset = 9.99;
 
 quad(x) = dc(x)*dc(x);
-Accel = quad(accel_x),quad(accel_y),quad(accel_z):> sqrt:-(offset):/((10)-(offset)):max(0.):min(1.);
+Accel = quad(accel_x),quad(accel_y),quad(accel_z) :> sqrt:-(offset):/((10)-(offset)) : max(0.) : min(1.);
 
 // Maccel mean Motion with accelerometer
 //Maccel = Accel:lowpassfilter:min(1.);
 Maccel = Accel:an.amp_follower_ud (env_up,env_down)
 with {
     env_up = 0;
-    env_down = hslider("v:sfMoulin parameter(s)/fade_out[acc:1 0 -10 0 10][color: 255 255 0 ][hidden:1]",130,0,1000,1)*0.001 : fi.lowpass(1,1);
+    env_down = hslider("v:sfMoulin parameter(s)/fade_out [acc:1 0 -10 0 10][color: 255 255 0][hidden:1]",130,0,1000,1)*0.001 : fi.lowpass(1,1);
 };
 
 // Taccel mean Trigger from accelerometer alike a choc detection to start (send 1) and from end of motion from Maccel (send 0)

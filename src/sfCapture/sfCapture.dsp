@@ -1,8 +1,8 @@
-declare name        "Capture";
-declare version     "1.4";
-declare author      "Christophe Lebreton, Stéphane Letz";
-declare license     "BSD";
-declare copyright   "SmartFaust - GRAME(c)2013-2024";
+declare name       "sfCapture";
+declare version    "1.4";
+declare author     "Christophe Lebreton, Stéphane Letz";
+declare license    "BSD";
+declare copyright  "SmartFaust - GRAME(c)2013-2024";
 
 import("stdfaust.lib");
 
@@ -13,8 +13,8 @@ with {
 };
 
 //--------------------- INTERFACE ---------------------------
-record = checkbox("v:sfCapture/RECORD [color: 255 0 0 ]");
-play = checkbox("v:sfCapture/PLAY [color: 0 255 0 ]");
+record = checkbox("v:sfCapture/RECORD [color: 255 0 0]");
+play = checkbox("v:sfCapture/PLAY [color: 0 255 0]");
 
 //-----------------------------------------------------------
 // max size of buffer to be record
@@ -24,7 +24,7 @@ size = 441000;
 // sah is like latch but reverse input for a expression
 sah(x,c) = x * s : + ~ *(1-s) with { s = ((c'<=0)&(c>0)); };
 
-speed = hslider("v:sfCapture parameter(s)/speed [acc:0 0 -10 0 10][color: 0 255 0 ][hidden:1]",1,0.25,2,0.001):fi.lowpass(1,1):max(0.25):min(2);
+speed = hslider("v:sfCapture parameter(s)/speed [acc:0 0 -10 0 10][color: 0 255 0][hidden:1]",1,0.25,2,0.001):fi.lowpass(1,1):max(0.25):min(2);
 
 id_count_rec = (0):+~(+(1): * ((fade_lin)>0)) : min(size+1); // recording if fade > O
 // this code acuumulates a large number which makes you lose precision, it is a musical choice ;)

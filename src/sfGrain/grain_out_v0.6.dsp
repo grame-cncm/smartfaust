@@ -15,9 +15,9 @@ process = vgroup("select your sample 1 to 7",(player_A, player_B, player_C, play
 // Accelerometer Part ///////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Usage: _:*(Maccel):_ // this function is useful for smooth control from accelerometers
-accel_x = hslider("v:sfGrain parameter(s)/acc_x [acc:0 0 -10 0 10][color: 0 255 0 ][hidden:1]", 0, -100, 100, 1);
-accel_y = hslider("v:sfGrain parameter(s)/acc_y [acc:1 0 -10 0 10][color: 0 255 0 ][hidden:1]", 0, -100, 100, 1);
-accel_z = hslider("v:sfGrain parameter(s)/acc_z [acc:2 0 -10 0 10][color: 0 255 0 ][hidden:1]", 0, -100, 100, 1);
+accel_x = hslider("v:sfGrain parameter(s)/acc_x [acc:0 0 -10 0 10][color: 0 255 0][hidden:1]", 0, -100, 100, 1);
+accel_y = hslider("v:sfGrain parameter(s)/acc_y [acc:1 0 -10 0 10][color: 0 255 0][hidden:1]", 0, -100, 100, 1);
+accel_z = hslider("v:sfGrain parameter(s)/acc_z [acc:2 0 -10 0 10][color: 0 255 0][hidden:1]", 0, -100, 100, 1);
 
 lowpassfilter = fi.lowpass(N,fc)
 with {
@@ -47,8 +47,8 @@ Accel = quad(accel_x),quad(accel_y),quad(accel_z):> sqrt:-(offset):/((10)-(offse
 // Maccel = Accel:lowpassfilter:min(1.);
 Maccel = Accel:an.amp_follower_ud(env_up,env_down)
 with {
-    env_up = hslider("v:sfGrain parameter(s)/fade_in [acc:1 0 -10 0 10][color: 255 255 0 ]", 130,0,1000,1)*0.001 : fi.lowpass(1,1); //[accy:1 0 130 0]
-    env_down = hslider("v:sfGrain parameter(s)/fade_out[acc:1 0 -10 0 10][color: 255 255 0 ]", 130,0,1000,1)*0.001 : fi.lowpass(1,1); //[accy:1 0 130 0]
+    env_up = hslider("v:sfGrain parameter(s)/fade_in [acc:1 0 -10 0 10][color: 255 255 0]", 130,0,1000,1)*0.001 : fi.lowpass(1,1); //[accy:1 0 130 0]
+    env_down = hslider("v:sfGrain parameter(s)/fade_out[acc:1 0 -10 0 10][color: 255 255 0]", 130,0,1000,1)*0.001 : fi.lowpass(1,1); //[accy:1 0 130 0]
 };
 
 //------------------
@@ -87,7 +87,7 @@ multiselect(n,s) = par(i,n, *(i==int(s))) :> _;
 
 //speed = hslider("speed playback [accy:1 0 0 0][color: 255 100 255 ]",0,-10,10,0.01): lowpass(1,1);
 speed = 1;
-//speed = hslider("speed [color: 0 255 0 ]",1,-1,1,0.001):smooth(0.998);
+//speed = hslider("speed [color: 0 255 0]",1,-1,1,0.001):smooth(0.998);
 
 ///////////////////////////////////////
 // granular part //////////////////////

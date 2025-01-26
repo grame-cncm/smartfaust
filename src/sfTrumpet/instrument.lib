@@ -30,16 +30,16 @@ with {
         (y + p1*p3*u*(s/100) - p4*w*y)*((p4==0)|(y>=eps))	// y  = envelop signal
 		//*(y>=eps) // cut off tails to prevent denormals
     with {
-	p1 = (p2==0) & (t>0) & (y<1) & (cnt>(b*ma.SR)); // p1 = attack phase
-	p3 = 1-(cnt<(nb)); // p3 = beginning phase
-	p4 = (t<=0) & (y>0);  // p4 = release phase
-	// #samples in attack, release, must be >0
-	nb = ma.SR*b+(b==0.0) ; na = ma.SR*a+(a==0.0); nr = ma.SR*r+(r==0.0);
-	// attack and (-60dB) release rates
-	z = s+(s==0.0)*ba.db2linear(-60);
-	u = 1/na; w = 1-1/pow(z*ba.db2linear(60), 1/nr);
-	// values below this threshold are considered zero in the release phase
-	eps = ba.db2linear(-120);
+	    p1 = (p2==0) & (t>0) & (y<1) & (cnt>(b*ma.SR)); // p1 = attack phase
+	    p3 = 1-(cnt<(nb)); // p3 = beginning phase
+	    p4 = (t<=0) & (y>0);  // p4 = release phase
+	    // #samples in attack, release, must be >0
+	    nb = ma.SR*b+(b==0.0) ; na = ma.SR*a+(a==0.0); nr = ma.SR*r+(r==0.0);
+	    // attack and (-60dB) release rates
+	    z = s+(s==0.0)*ba.db2linear(-60);
+	    u = 1/na; w = 1-1/pow(z*ba.db2linear(60), 1/nr);
+	    // values below this threshold are considered zero in the release phase
+	    eps = ba.db2linear(-120);
     };
 };
 
@@ -61,16 +61,16 @@ with {
         (y + p1*u*(s/100) - p3*w*y)	// y  = envelop signal
 	*((p3==0)|(y>=eps)) // cut off tails to prevent denormals
     with {
-	p1 = (p2==0) & (t>0) & (y<1); // p1 = attack phase
-	p3 = (t<=0) & (y>0); // p3 = release phase
-	// #samples in attack, release, must be >0
-	na = ma.SR * a+(a==0.0); nr = ma.SR * r+(r==0.0);
-	// correct zero sustain level
-	z = s+(s==0.0)* ba.db2linear(-60);
-	// attack and (-60dB) release rates
-	u = 1/na; w = 1-1/pow(z* ba.db2linear(60), 1/nr);
-	// values below this threshold are considered zero in the release phase
-	eps = ba.db2linear(-120);
+	    p1 = (p2==0) & (t>0) & (y<1); // p1 = attack phase
+	    p3 = (t<=0) & (y>0); // p3 = release phase
+	    // #samples in attack, release, must be >0
+	    na = ma.SR * a+(a==0.0); nr = ma.SR * r+(r==0.0);
+	    // correct zero sustain level
+	    z = s+(s==0.0)* ba.db2linear(-60);
+	    // attack and (-60dB) release rates
+	    u = 1/na; w = 1-1/pow(z* ba.db2linear(60), 1/nr);
+	    // values below this threshold are considered zero in the release phase
+	    eps = ba.db2linear(-120);
     };
 };
 
@@ -86,7 +86,7 @@ with {
 //   trig = trigger signal
 
 asympT60(value,trgt,T60,trig) = (_*factor + constant)~_
-	with{
+	with {
 		cntSample = *(trig) + 1~_ : -(1);
 		attDur = float(2);
 		cndFirst = ((cntSample < attDur) & (trig > 0));
@@ -120,9 +120,9 @@ saturationNeg(x) = x <: (_<-1),(_>=-1 : *(x)) :> *(-1) + _;
 //   0 <= index <= 1
 
 bow(offset,slope) = pow(abs(sample) + 0.75, -4) : saturationPos
-	with{
+with {
 	sample(y) = (y + offset)*slope;
-	};
+};
 
 //----------------------- REED TABLE ----------------------------
 // Simple reed table to be used with waveguide models of clanrinet, saxophone, etc.
@@ -136,9 +136,9 @@ bow(offset,slope) = pow(abs(sample) + 0.75, -4) : saturationPos
 //   https://ccrma.stanford.edu/~jos/pasp/View_Single_Reed_Oscillation.html
 
 reed(offset,slope) = reedTable : saturationPos : saturationNeg
-	with{
+with {
 	reedTable = offset + (slope*_);
-	};
+};
 
 //========================= FILTERS ===============================
 
@@ -176,13 +176,13 @@ oneZero1(b0,b1,x) = (x'*b1 + x*b0);
 //   radius = radius
 
 bandPassH(resonance,radius) = fi.TF2(b0,b1,b2,a1,a2)
-	with{
-		a2 = radius*radius;
-		a1 = -2*radius*cos(ma.PI*2*resonance/ma.SR);
-		b0 = 1;
-		b1 = 0;
-		b2 = 0;
-	};
+with {
+	a2 = radius*radius;
+	a1 = -2*radius*cos(ma.PI*2*resonance/ma.SR);
+	b0 = 1;
+	b1 = 0;
+	b2 = 0;
+};
 
 //----------------------- FLUE JET NON-LINEAR FUNCTION ----------------------------
 // Jet Table: flue jet non-linear function, computed by a polynomial calculation
@@ -212,7 +212,7 @@ nonLinearModulator(nonlinearity,env,freq,typeMod,freqMod,order) =
 	//theta is modulated by the incoming signal
 	     (_ <: nonLinearFilterSig*nonlinearity,_*(1 - nonlinearity) :> +)*(typeMod < 3)
 	:> +
-	with{
+	with {
 		//which frequency to use for the sine wave oscillator?
 		freqOscMod = (typeMod == 4)*freq + (typeMod != 4)*freqMod;
 
@@ -258,12 +258,12 @@ marmstk1TableSize = 246;
 //   Formulation initiated by Julius O. Smith in https://ccrma.stanford.edu/realsimple/faust_strings/
 
 stereoizer(periodDuration) = _ <: _,widthdelay : stereopanner
-	   with{
+	with {
 		W = hslider("v:Spat/spatial width", 0.5, 0, 1, 0.01);
 		A = hslider("v:Spat/pan angle", 0.6, 0, 1, 0.01);
 		widthdelay = de.delay(4096,W*periodDuration/2);
 		stereopanner = _,_ : *(1.0-A), *(A);
-	   };
+	};
 
 //----------------------- INSTRREVERB ----------------------------
 // GUI for zita_rev1_stereo from effect.lib
@@ -273,7 +273,7 @@ stereoizer(periodDuration) = _ <: _,widthdelay : stereopanner
 
 instrReverb = _,_ <: *(reverbGain),*(reverbGain),*(1 - reverbGain),*(1 - reverbGain) :
 zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
-       with{
+    with {
        reverbGain = hslider("v:Reverb/reverbGain",0.137,0,1,0.01) : si.smooth(0.999);
        roomSize = hslider("v:Reverb/roomSize",0.72,0.01,2,0.01);
        rdel = 20;
@@ -282,4 +282,4 @@ zita_rev1_stereo(rdel,f1,f2,t60dc,t60m,fsmax),_,_ <: _,!,_,!,!,_,!,_ : +,+
        t60dc = roomSize*3;
        t60m = roomSize*2;
        fsmax = 48000;
-       };
+    };

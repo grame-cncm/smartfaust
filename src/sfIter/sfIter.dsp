@@ -52,7 +52,7 @@ vln = oscillateur(vol, freq, modul1)
 with {
     modul1 = oscillateur(volmod, freqmod, modul1mod);
 
-    vol = hslider("v:sfIter parameter(s)/vol  [osc:/vol -1 1][acc:0 1 -10 0 10] [color:255 0 0][hidden:1]",0.5,0,1,0.0001) : filter_accel;
+    vol = hslider("v:sfIter parameter(s)/vol [osc:/vol -1 1][acc:0 1 -10 0 10][color:255 0 0][hidden:1]",0.5,0,1,0.0001) : filter_accel;
 
     freq = hslider("v:sfIter parameter(s)/freq [osc:/freq -1 1][acc:0 0 -10 0 10][color:255 0 0][hidden:1]",390,100,2000,1) : si.smooth(0.998);
     volmod = vol : *(freqmod);
@@ -157,9 +157,9 @@ with {
     // f1 = vslider("[1] LF X [hidden:1][unit:Hz] [style:knob] [tooltip: Crossover frequency (Hz) separating low and middle frequencies]", 500, 50, 1000, 1);
     f1=500;
 
-    t60dc = hslider("v:sfIter parameter(s)/[2] Low RT60 [unit:s]   [tooltip: T60 = time (in seconds) to decay 60dB in low-frequency band][acc:1 0 -10 0 10][color:255 255 0][hidden:1]", 6.5, 1, 10, 0.1);
+    t60dc = hslider("v:sfIter parameter(s)/[2] Low RT60 [unit:s][tooltip: T60 = time (in seconds) to decay 60dB in low-frequency band][acc:1 0 -10 0 10][color:255 255 0][hidden:1]", 6.5, 1, 10, 0.1);
 
-    t60m = hslider("v:sfIter parameter(s)/[3] Mid RT60 [unit:s]  [tooltip: T60 = time (in seconds) to decay 60dB in middle band][acc:1 0 -10 0 10][color:255 255 0][hidden:1]", 6.5, 1, 10, 0.1);
+    t60m = hslider("v:sfIter parameter(s)/[3] Mid RT60 [unit:s][tooltip: T60 = time (in seconds) to decay 60dB in middle band][acc:1 0 -10 0 10][color:255 255 0][hidden:1]", 6.5, 1, 10, 0.1);
 
     //f2 = vslider("[4] HF Damping [hidden:1][unit:Hz] [style:knob] [tooltip: Frequency (Hz) at which the high-frequency T60 is half the middle-band's T60]", 8000, 1500, 0.49*fsmax, 1);
     f2=8000;

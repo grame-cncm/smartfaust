@@ -4,6 +4,3 @@ all: converter.cpp
 	
 convert:
 	for file in *.wav; do flac -8 "$$file" -o "$${file%.wav}.flac"; done
-	
-exp:
-	faust -e sfGrain_old.dsp -o sfGrain.dsp

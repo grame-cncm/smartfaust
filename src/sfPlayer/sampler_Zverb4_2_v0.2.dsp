@@ -154,7 +154,7 @@ with {
         dry = 1.0-wet;
     };
 
-    drywet = (hslider("v:sfPlayer parameter(s)/[1] Dry/Wet Mix  [tooltip: -1 = dry, 1 = wet] [acc:1 1 -10 5 10][color:255 255 0][hidden:1]", 5, 0, 17, 0.1)*0.02)-1:fi.lowpass(1,1):max(-1):min(1);
+    drywet = (hslider("v:sfPlayer parameter(s)/[1] Dry/Wet Mix [tooltip: -1 = dry, 1 = wet][acc:1 1 -10 5 10][color:255 255 0][hidden:1]", 5, 0, 17, 0.1)*0.02)-1:fi.lowpass(1,1):max(-1):min(1);
 
     //out_level = *(gain),*(gain);
     //gain = out_group(vslider("[2] Level [unit:dB] [style:knob] [tooltip: Output scale factor]", -0, -70, 40, 0.1)) : db2linear;

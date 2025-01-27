@@ -35,12 +35,12 @@ with {
     w = (75)* ma.SR *(0.001);
     //x = hslider("xfade [units (ms)]", 10, 1, 500, 1)*SR*0.001 : smooth (0.99);
     x = w * 0.5;
-    s = (hslider("v:sfPlayer parameter(s)/shift [units (cents)] [acc:0 0 -10 0 10][color: 255 0 0 ][hidden:1] ", 0, -200, 200, 0.1))*0.01 : fi.lowpass(1,1); //[accx:1 0 0 1]
+    s = (hslider("v:sfPlayer parameter(s)/shift [units (cents)] [acc:0 0 -10 0 10][color: 255 0 0 ][hidden:1]", 0, -200, 200, 0.1))*0.01 : fi.lowpass(1,1); //[accx:1 0 0 1]
 };
 
 dry_wet(x,y) = (1-c)*x + c*y
 with {
-    c = hslider("v:sfPlayer parameter(s)/dry_wet  [acc:2 0 -10 0 10][color: 0 255 0 ][hidden:1] ",100,0,100,0.01):*(0.01):fi.lowpass(1,1); //[accz:1 0 100 0]
+    c = hslider("v:sfPlayer parameter(s)/dry_wet [acc:2 0 -10 0 10][color: 0 255 0 ][hidden:1]",100,0,100,0.01):*(0.01):fi.lowpass(1,1); //[accz:1 0 100 0]
 };
 
 pitchshifter_drywet = _ <: _,pitchshifter : dry_wet;

@@ -17,9 +17,9 @@ process = vgroup("select your sample 1 to 10",(player_A, player_B, player_C, pla
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Usage: _:*(Maccel):_ // this function is useful for smooth control from accelerometers
 
-accel_x = hgroup("v:sfPlayer parameter(s)/accel [hidden:1]", vslider("acc_x [acc:0 0 -10 0 10][color: 0 255 0][hidden:1]",0,-100,100,1));
-accel_y = hgroup("v:sfPlayer parameter(s)/accel [hidden:1]", vslider("acc_y [acc:1 0 -10 0 10][color: 0 255 0][hidden:1]",0,-100,100,1));
-accel_z = hgroup("v:sfPlayer parameter(s)/accel [hidden:1]", vslider("acc_z [acc:2 0 -10 0 10][color: 0 255 0][hidden:1]",0,-100,100,1));
+accel_x = vslider("acc_x [acc:0 0 -10 0 10][color: 0 255 0][hidden:1]",0,-100,100,1);
+accel_y = vslider("acc_y [acc:1 0 -10 0 10][color: 0 255 0][hidden:1]",0,-100,100,1);
+accel_z = vslider("acc_z [acc:2 0 -10 0 10][color: 0 255 0][hidden:1]",0,-100,100,1);
 
 lowpassfilter = fi.lowpass(N,fc)
 with {

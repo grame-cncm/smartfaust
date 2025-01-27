@@ -61,7 +61,7 @@ int main() {
     writeWavFile("sampleD.wav", soundFileSize_sampleD, readSoundFile_sampleD);
     writeWavFile("sampleE.wav", soundFileSize_sampleE, readSoundFile_sampleE);
     writeWavFile("sampleF.wav", soundFileSize_sampleF, readSoundFile_sampleF);
-    writeWavFile("sampleG.wav", soundFileSize_sampleG, readSoundFile_sampleH);
+    writeWavFile("sampleG.wav", soundFileSize_sampleG, readSoundFile_sampleG);
     writeWavFile("sampleH.wav", soundFileSize_sampleH, readSoundFile_sampleH);
 
     return 0;

@@ -12,7 +12,7 @@ import("instrument.lib");
 // and use en.adsr but setting an envelopeRelease value to 0.001 instead of 0 to also avoid a division by 0
 
 //-------------------- MAIN -------------------------------
-process = trumpet : Zverb4 : max(-0.99) : min(0.99);
+process = trumpet : Zverb4 : max(-0.99) : min(0.99) <: _,_;
 
 //==================== GUI SPECIFICATION ================
 freq = hslider("v:sfTrumpet parameter(s)/freq [1] [acc:0 0 -10 0 10][color:255 0 0][hidden:1]",165,117,290,1):fi.lowpass(1,0.5);

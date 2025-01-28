@@ -8,7 +8,7 @@ import("stdfaust.lib");
 
 //--------------------------------------------------------------------------------------------------
 // MAIN PROCESS
-process = no.pink_noise : *(Motion) : moog_vcf_wind : *(out)
+process = no.pink_noise : *(Motion) : moog_vcf_wind : *(out) <: _,_
 with {
     out = checkbox("v:sfWindy/ON/OFF") : si.smooth(0.998);
 };

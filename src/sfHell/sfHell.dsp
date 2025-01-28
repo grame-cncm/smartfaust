@@ -7,7 +7,7 @@ declare copyright  "SmartFaust - GRAME(c)2013-2018";
 import("stdfaust.lib");
 
 //-------------------- MAIN -------------------------------
-process = Hell_EKS2 : Hell_comb2 : Hell_Verb2 : *(out) : max(-0.99) : min(0.99)
+process = Hell_EKS2 : Hell_comb2 : Hell_Verb2 : *(out) : max(-0.99) : min(0.99) <: _,_
 with {
     out = checkbox("v:sfHell/ON/OFF") : si.smooth(0.998);
 };
@@ -72,7 +72,7 @@ loopfilter = dampingfilter2; // or dampingfilter1
 filtered_excitation = excitation : si.smooth(pickangle) : pickposfilter : fi.levelfilter(L,freq); // see filter.lib
 stringloop = (+ : de.fdelay4(Pmax, P-2)) ~ (loopfilter);
 
-//Adequate when when brightness or dynamic level are sufficiently low:
+//Adequate when brightness or dynamic level are sufficiently low:
 //stringloop = (+ : fdelay1(Pmax, P-2)) ~ (loopfilter);
 
 // Second output decorrelated somewhat for spatial diversity over imaging:

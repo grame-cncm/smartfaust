@@ -9,7 +9,7 @@ import("stdfaust.lib");
 //-------------------- MAIN -------------------------------
 // fb_fcomb from Julius Smith filter lib and adapted by Christophe Lebreton to SmartFaust project
 // https://ccrma.stanford.edu/~jos/pasp/Feedback_Comb_Filters.html
-process = fi.fb_fcomb(maxdel,del,b0,aN):*(volume):*(out)
+process = fi.fb_fcomb(maxdel,del,b0,aN) : *(volume) : *(out) <: _,_
 with {
     maxdel = 1<<16;  // 2 exposant 16 soit 65536 samples  1<<16
     freq = 1/(vslider("h:sfTrashComb parameter(s)/freq [acc:0 0 -10 0 10][color:255 0 0][hidden:1]",2300,100,20000,0.001)) : si.smooth(0.99); //[accx:1 0 2300 0]

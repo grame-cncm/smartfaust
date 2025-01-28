@@ -7,7 +7,7 @@ declare copyright  "SmartFaust - GRAME(c)2013-2024";
 import("stdfaust.lib");
 
 //-------------------- MAIN -------------------------------
-process =_,(fade_lin) : * : wr_index : idelay_drywet : *(volume)
+process =_,(fade_lin) : * : wr_index : idelay_drywet : *(volume) <: _,_
 with {
     volume = hslider("v:sfCapture parameter(s)/volume [acc:2 1 -10 -0.8 10][color:0 255 0][hidden:1]",1,-0.1,1,0.001) : max(0) : min(1) : fi.lowpass(1,1);
 };
@@ -26,9 +26,9 @@ sah(x,c) = x * s : + ~ *(1-s) with { s = ((c'<=0)&(c>0)); };
 
 speed = hslider("v:sfCapture parameter(s)/speed [acc:0 0 -10 0 10][color: 0 255 0][hidden:1]",1,0.25,2,0.001):fi.lowpass(1,1):max(0.25):min(2);
 
-id_count_rec = (0):+~(+(1): * ((fade_lin)>0)) : min(size+1); // recording if fade > O
+id_count_rec = (0) : +~(+(1) : * ((fade_lin)>0)) : min(size+1); // recording if fade > O
 // this code acuumulates a large number which makes you lose precision, it is a musical choice ;)
-id_count_play = (0):+~(+(speed): * (play)) : (safe_fmod(_,fin_rec) : int)
+id_count_play = (0) : +~(+(speed) : * (play)) : (safe_fmod(_,fin_rec) : int)
 with {
     safe_fmod(x,y) = fmod(max(ma.EPSILON,x),max(ma.EPSILON,y));
 };

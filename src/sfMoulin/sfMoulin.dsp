@@ -9,7 +9,7 @@ import("moulin_v0.1.lib");
 
 //-------------------- MAIN -------------------------------
 process = vgroup("select your sample 1 to 8",(player_A, player_B, player_C, player_D, player_E, player_F, player_G, player_H)
-:multiselect(8, select_sample) : fi.dcblockerat(50) : *(Maccel)) : *(out)
+: multiselect(8, select_sample) : fi.dcblockerat(50) : *(Maccel)) : *(out) <: _,_
 with {
     out = checkbox("v:sfMoulin/ON/OFF") : si.smooth(0.998);
 };
@@ -75,7 +75,7 @@ with {
     s = ((c'>= threshold_down)&(c < threshold_down));
 };
 
-Taccel = ((Accel:trig_up),(Maccel:trig_down):+) : (+ : max(0) : min(1)) ~ _;
+Taccel = ((Accel : trig_up),(Maccel : trig_down) : +) : (+ : max(0) : min(1)) ~ _;
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -93,17 +93,17 @@ multiselect(n,s) = par(i,n, *(i==int(s))) :> _;
 // version with gyro
 //speed = vslider ("speed [gyroy:1 0 0 0][color: 0 255 0 ][hidden:1]",1,-3,3,0.001):smooth(0.998):max(-1):min(1);
 // version with accelero
-speed = Maccel:max(-1):min(1);
+speed = Maccel : max(-1) : min(1);
 
-player(size) = (int)((0):+~(+(speed): * (Taccel): fmod(_,max(1,size)))) : abs : int;
+player(size) = (int)((0) : +~(+(speed) : *(Taccel) : fmod(_,max(1,size)))) : abs : int;
 
-player_A = player( soundFileSize_sampleA) : readSoundFileA;
-player_B = player( soundFileSize_sampleB) : readSoundFileB;
-player_C = player( soundFileSize_sampleC) : readSoundFileC;
-player_D = player( soundFileSize_sampleD) : readSoundFileD;
-player_E = player( soundFileSize_sampleE) : readSoundFileE;
-player_F = player( soundFileSize_sampleF) : readSoundFileF;
-player_G = player( soundFileSize_sampleG) : readSoundFileG;
-player_H = player( soundFileSize_sampleH) : readSoundFileH;
+player_A = player(soundFileSize_sampleA) : readSoundFileA;
+player_B = player(soundFileSize_sampleB) : readSoundFileB;
+player_C = player(soundFileSize_sampleC) : readSoundFileC;
+player_D = player(soundFileSize_sampleD) : readSoundFileD;
+player_E = player(soundFileSize_sampleE) : readSoundFileE;
+player_F = player(soundFileSize_sampleF) : readSoundFileF;
+player_G = player(soundFileSize_sampleG) : readSoundFileG;
+player_H = player(soundFileSize_sampleH) : readSoundFileH;
 
 ////////////////

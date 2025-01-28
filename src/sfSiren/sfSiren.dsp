@@ -7,7 +7,7 @@ declare copyright  "SmartFaust - GRAME(c)2013-2018";
 import("stdfaust.lib");
 
 //-------------------- MAIN -------------------------------
-process = FM_synth : *(out) : max(-0.99) : min(0.99)
+process = FM_synth : *(out) : max(-0.99) : min(0.99) <: _,_
 with {
     out = checkbox ("v:sfSiren/ON/OFF") : si.smooth(0.998);
 };

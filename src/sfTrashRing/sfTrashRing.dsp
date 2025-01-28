@@ -7,7 +7,7 @@ declare copyright  "SmartFaust - GRAME(c)2013-2018";
 import("stdfaust.lib");
 
 //-------------------- MAIN -------------------------------
-process = ringmod_drywet:*(gain):*(volume)*(out)
+process = ringmod_drywet : *(gain) : *(volume)*(out) <: _,_
 with {
     gain = hslider("v:sfTrashRing parameter(s)/gain[acc:2 1 -10 0 10][color:255 255 0][hidden:1]",0.2,0,1,0.001) : fi.lowpass(1,1) : max(0) : min(1);
     volume = vslider("h:sfTrashRing/Volume",1,0,2,0.001) : si.smooth(0.998) : max(0) : min(2);

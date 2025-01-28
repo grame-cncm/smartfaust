@@ -7,7 +7,7 @@ declare copyright "SmartFaust - GRAME(c)2013-2018";
 import("stdfaust.lib");
 
 //-------------------- MAIN -------------------------------
-process = Gringo <: zita_rev3 :> _ : *(out)
+process = Gringo <: zita_rev3 :> _ : *(out) <: _,_
 with {
     out = checkbox("v:sfIter/ON/OFF"):si.smooth(0.998);
 };

@@ -37,9 +37,6 @@ with {
 
 fin_rec = sah(id_count_rec : mem, fade_lin==0);    // end of record if fade == O
 
-// START STOP RECORD /////////////////////////////////////////////
-init_rec = select2(record,size+1,_);
-
 // FADER IN & OUT ////////////////////////////////////////////////
 // define the level of each step increase or decrease to create fade in/out
 time_fade = 0.1; // sec
@@ -47,7 +44,7 @@ state = record;
 
 // version of linear fade
 base_amp = 1,(ma.SR)*(time_fade):/;
-fade_lin = select2(state,(-1)*(base_amp),base_amp):+~(min((1)-base_amp):max(base_amp));
+fade_lin = select2(state, (-1)*(base_amp), base_amp) : +~(min((1)-base_amp) : max(base_amp));
 
 // BUFFER SEQUENCER //////////////////////////////////////////
 wr_index = rwtable(size+1, 0., windex,_, rindex)

@@ -1,5 +1,5 @@
 # SmartFaust
-The 2014 Smartfaust concert applications created by Christophe Lebreton for [Xavier Garcia Composition](https://www.grame.fr/articles/smartfaust-5d839e9c3a877). 
+The 2014 SmartFaust concert applications created by Christophe Lebreton for [Xavier Garcia Composition](https://www.grame.fr/articles/smartfaust-5d839e9c3a877). 
 
 ### Privacy Policy 
 

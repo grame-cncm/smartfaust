@@ -5,6 +5,7 @@ declare license     "BSD & STK-4.3";
 declare copyright   "SmartFaust - GRAME(c)2013-2025";
 
 import("stdfaust.lib");
+mo = library("motion.lib");
 import("moulin_v0.1.lib");
 
 //-------------------- MAIN -------------------------------
@@ -23,33 +24,18 @@ accel_x = hslider("v:sfMoulin parameter(s)/acc_x [acc:0 0 -10 0 10][color: 0 255
 accel_y = hslider("v:sfMoulin parameter(s)/acc_y [acc:1 0 -10 0 10][color: 0 255 0][hidden:1]",0,-100,100,1); //[accy:1 0 0 0]
 accel_z = hslider("v:sfMoulin parameter(s)/acc_z [acc:2 0 -10 0 10][color: 0 255 0][hidden:1]",0,-100,100,1); //[accz:1 0 0 0]
 
-lowpassfilter = fi.lowpass(N,fc)
-with {
-    // fc=hslider("high_cut [hidden:1]",0.5,0.001,10,0.1);
-    fc = 0.5;
-    N = 1; // order of filter
-};
-
-lowpassmotion = fi.lowpass(N,fc)
-with {
-    // fc = hslider("high_cut [hidden:1]",10,0.01,10,0.01);
-    fc = 10;
-    N = 1; // order of filter
-};
-
 //fb=hslider("low_cut [hidden:1]",15,0.1,15,0.01);
 fb = 15;
 dc(x) = x : fi.dcblockerat(fb);
 
-//offset = hslider ("thr_accel [hidden:1]",9.99,0,9.99,0.01);
+// offset to cancel unstable motion (stress motion;))
 offset = 9.99;
 
-quad(x) = dc(x)*dc(x);
-Accel = quad(accel_x),quad(accel_y),quad(accel_z) :> sqrt:-(offset):/((10)-(offset)) : max(0.) : min(1.);
+// 3-axis magnitude (motion.lib pita3), dead-zone and normalization.
+Accel = mo.pita3(dc(accel_x), dc(accel_y), dc(accel_z)) : -(offset) : /((10)-(offset)) : max(0.) : min(1.);
 
 // Maccel mean Motion with accelerometer
-//Maccel = Accel:lowpassfilter:min(1.);
-Maccel = Accel:an.amp_follower_ud (env_up,env_down)
+Maccel = Accel : an.amp_follower_ud(env_up, env_down)
 with {
     env_up = 0;
     env_down = hslider("v:sfMoulin parameter(s)/fade_out [acc:1 0 -10 0 10][color: 255 255 0][hidden:1]",130,0,1000,1)*0.001 : fi.lowpass(1,1);

@@ -10,13 +10,6 @@ import("stdfaust.lib");
 process = _<:_,crybaby_ios:dry_wet_mono;
 
 //-------------------- PARAMETERS -------------------------------
-lowpassmotion = fi.lowpass(N,fc)
-with {
-    //fc= hslider("h:motion filter/high_cut [hidden:1]",10,0.01,10,0.01);
-    fc = 10;
-    N = 1;// order of filter
-};
-
 // direct from effect.lib ( "Julius O. Smith ") and adapted by Christophe Lebreton for ios
 crybaby_ios = ve.crybaby(wah)
 with {

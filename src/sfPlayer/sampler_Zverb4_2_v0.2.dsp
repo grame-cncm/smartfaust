@@ -10,13 +10,6 @@ import("stdfaust.lib");
 process = _ <: zita_rev3 :> _;
 
 //-------------------- PARAMETERS -------------------------------
-lowpassmotion = fi.lowpass(N,fc)
-with {
-    // fc= hslider("h:motion filter/high_cut [hidden:1]",10,0.01,10,0.01);
-    fc = 10;
-    N = 1;// order of filter
-};
-
 // from effect.lib but with only N=4 for mobilephone application
 zita_rev_fdn4(f1,f2,t60dc,t60m,fsmax) =
   (( si.bus(2*N) :> allpass_combs(N) : feedbackmatrix(N)) ~

@@ -5,6 +5,7 @@ declare license     "BSD";
 declare copyright   "SmartFaust - GRAME(c)2013-2018";
 
 import("stdfaust.lib");
+mo = library("motion.lib");
 
 //--------------------------------------------------------------------------------------------------
 // MAIN PROCESS
@@ -23,14 +24,12 @@ accel_x = vslider("v:sfWindy parameter(s)/acc_x [acc:0 0 -10 0 10][color: 0 255 
 accel_y = vslider("v:sfWindy parameter(s)/acc_y [acc:1 0 -10 0 10][color: 0 255 0][hidden:1]",0,-100,100,1);
 accel_z = vslider("v:sfWindy parameter(s)/acc_z [acc:2 0 -10 0 10][color: 0 255 0][hidden:1]",0,-100,100,1);
 
-// normalize 0 to 1 of 3 axes accelerometers ( pythagoria )
-Motion = quad(accel_x),quad(accel_y),quad(accel_z) :> sqrt : -(offset) : max(0.) : min(1.) : an.amp_follower_ud (env_up,env_down)
+// 3-axis magnitude (motion.lib pita3), dead-zone, then up/down envelope follower.
+Motion = mo.pita3(dc(accel_x), dc(accel_y), dc(accel_z)) : -(offset) : max(0.) : min(1.) : an.amp_follower_ud(env_up, env_down)
 with {
-    // DC filter to cancel low frequency from acceleromters ( inclinometers )
+    // DC filter to cancel low frequency from accelerometers (inclinometers)
     dc(x) = x : fi.dcblockerat(fb);
     fb = hslider("v:sfWindy parameter(s)/low_cut[freq DC filter] [hidden:1]",12,0.,15,0.01);
-    // square function with DC filter integrated
-    quad(x) = dc(x)*dc(x);
     // offset to cancel unstable motion (stress motion;))
     offset = hslider("v:sfWindy parameter(s)/threshold [hidden:1]",6,0,100,0.1);
     // envelop follower to create smooth motion from acceleration

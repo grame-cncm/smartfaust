@@ -15,13 +15,6 @@ process = pitchshifter_drywet;
 // very simple real time pitch shifter
 //----------------------------
 
-lowpassmotion = fi.lowpass(N,fc)
-with {
-    //fc= hslider("h:motion filter/high_cut [hidden:1]",10,0.01,10,0.01);
-    fc = 10;
-    N = 1;// order of filter
-};
-
 transpose (w, x, s, sig) = de.fdelay1s(d,sig)* ma.fmin(d/x,1) + de.fdelay1s(d+w,sig)*(1- ma.fmin(d/x,1))
 with {
     i = 1 - pow(2, s/12);
